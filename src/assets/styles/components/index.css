@@ -5,4 +5,9 @@
   .btn-primary {
     @apply bg-primary;
   }
+
+  .auth-card{
+    @apply card flex-shrink-0 max-w-lg shadow-2xl bg-base-100 w-full;
+  }
+
 }
