@@ -1,0 +1,8 @@
+@layer components {
+  .btn{
+    @apply border-none h-fit min-h-[2rem] p-3;
+  }
+  .btn-primary {
+    @apply bg-primary;
+  }
+}
