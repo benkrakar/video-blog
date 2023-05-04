@@ -13,6 +13,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "daisyui": "^2.51.6",
     "vue": "^3.2.47",
     "vue-router": "^4.1.6"
   },
