@@ -1,6 +1,8 @@
-<script setup>
+<script setup lang="ts">
 import { ref, reactive } from 'vue'
+import { useStore } from 'vuex'
 
+const store = useStore()
 const passwordType = ref('password')
 
 const passwordToggle = () => {
@@ -14,6 +16,9 @@ const user = reactive({
   passwordConfirmation: ""
 })
 
+const login = async () => {
+  await store.dispatch('signUp', user)
+}
 </script>
 <template>
   <main>
@@ -24,9 +29,10 @@ const user = reactive({
             <div class="text-primary font-bold text-4xl mr-2">Video</div>
             <div class="text-secondary font-bold text-4xl">Blog</div>
           </div>
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text">Full Name</span>
+          <form @submit.prevent="login">
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text">Full Name</span>
             </label>
             <input
               type="text"
@@ -83,9 +89,9 @@ const user = reactive({
               placeholder="confirm password "
               class="input input-bordered w-full"
               v-model="user.passwordConfirmation"
-            />
+              />
               <button
-                v-if="user.passwordConfirmation"
+              v-if="user.passwordConfirmation"
                 class="absolute top-1/2 right-2 -mt-2 text-gray-500"
                 @click="passwordToggle"
               >
@@ -94,7 +100,7 @@ const user = reactive({
                     passwordType === 'password'
                       ? 'mdi:eye-outline'
                       : 'mdi:eye-off-outline'
-                  "
+                      "
                   class="text-lg"
                 />
               </button>
@@ -104,6 +110,7 @@ const user = reactive({
           <div class="form-control mt-6">
             <button class="btn btn-primary">Login</button>
           </div>
+        </form>
         </div>
       </div>
     </div>
@@ -113,4 +120,5 @@ const user = reactive({
 <route lang="yaml">
   meta:
     layout: auth
+    auth: "guest"
 </route>

@@ -1,8 +1,13 @@
-<script setup>
+<script setup lang="ts">
 import { ref, reactive } from 'vue'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
+import { auth } from '@/firebase/config'
 
+
+const store = useStore()
+const router = useRouter()
 const passwordType = ref('password')
-
 const passwordToggle = () => {
   passwordType.value = passwordType.value === 'password' ? 'text' : 'password'
 }
@@ -11,6 +16,17 @@ const user = reactive({
   email:"",
   password:"",
 })
+
+const login = async () => {
+  await store.dispatch('signIn', { email: user.email, password: user.password })
+  if(!auth.currentUser?.emailVerified){
+    await store.dispatch('logOut')
+  } else {
+      router.push("/");
+  };
+  
+
+}
 
 </script>
 <template>
@@ -22,6 +38,8 @@ const user = reactive({
             <div class="text-primary font-bold text-4xl mr-2">Video</div>
             <div class="text-secondary font-bold text-4xl">Blog</div>
           </div>
+          
+          <form @submit.prevent="login">
           <div class="form-control">
             <label class="label">
               <span class="label-text">Email</span>
@@ -29,7 +47,9 @@ const user = reactive({
             <input
               type="text"
               placeholder="email"
+                 v-model="user.email"
               class="input input-bordered"
+              name="email"
             />
           </div>
           <div class="form-control">
@@ -37,12 +57,13 @@ const user = reactive({
               <span class="label-text">Password</span>
             </label>
             
-  <div class="relative">
+            <div class="relative">
               <input
                 :type="passwordType"
                 placeholder="password"
                 class="input input-bordered w-full"
                 v-model="user.password"
+                  name="password"
               />
               <button
                 v-if="user.password"
@@ -56,18 +77,19 @@ const user = reactive({
                       : 'mdi:eye-off-outline'
                   "
                   class="text-lg"
-                />
-              </button>
+                  />
+                </button>
+              </div>
+              <label class="label">
+                <a href="#" class="label-text-alt link link-hover">
+                  Forgot password?
+                </a>
+              </label>
             </div>
-            <label class="label">
-              <a href="#" class="label-text-alt link link-hover">
-                Forgot password?
-              </a>
-            </label>
-          </div>
-          <div class="form-control mt-6">
-            <button class="btn btn-primary">Login</button>
-          </div>
+            <div class="form-control mt-6">
+              <button type="submit" class="btn btn-primary">Login</button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
@@ -77,4 +99,5 @@ const user = reactive({
 <route lang="yaml">
   meta:
     layout: auth
+    auth: "guest"
 </route>
