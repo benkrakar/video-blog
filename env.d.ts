@@ -7,3 +7,12 @@ declare interface User {
   email: string,
   password: string,
 }
+
+declare interface Blog {
+  id:string,
+  postDate: string,
+  title: string,
+  author: string,
+}
+
+

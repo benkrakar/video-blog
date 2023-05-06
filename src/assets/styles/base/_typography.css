@@ -9,3 +9,7 @@ h2 {
 h3 {
   @apply text-lg;
 }
+
+.main-title {
+  @apply text-4xl font-semibold leading-3 text-center ;
+}

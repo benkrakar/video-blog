@@ -2,8 +2,6 @@
 import { ref, reactive } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
-import { auth } from '@/firebase/config'
-
 
 const store = useStore()
 const router = useRouter()
@@ -19,13 +17,12 @@ const user = reactive({
 
 const login = async () => {
   await store.dispatch('signIn', { email: user.email, password: user.password })
-  if(!auth.currentUser?.emailVerified){
+  const currentUser = store.state.auth.user  
+  if(!currentUser.emailVerified){
     await store.dispatch('logOut')
   } else {
       router.push("/");
   };
-  
-
 }
 
 </script>
