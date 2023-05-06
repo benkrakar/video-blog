@@ -1,5 +1,5 @@
 import type { Module, ActionContext } from 'vuex'
-import { auth } from '@/firebase/config'
+import { auth } from '@/firebase'
 import type firebase from 'firebase/compat/app'
 
 import {
