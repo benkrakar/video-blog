@@ -39,7 +39,7 @@ const handleLoadedMetadata = () => {
   }
 }
 const saveBlog = async () => {
-  const metadata = {
+  const metadata: any = {
     customMetadata: {
       startTime: startTime.value,
       endTime: endTime.value,
