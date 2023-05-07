@@ -1,54 +1,52 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { addDoc, collection } from 'firebase/firestore'
 import {
-  addDoc,
-  collection,
-} from "firebase/firestore";
-import { getStorage, ref as storageRef, uploadBytes,  getDownloadURL } from "firebase/storage";
+  getStorage,
+  ref as storageRef,
+  uploadBytes,
+  getDownloadURL,
+} from 'firebase/storage'
 import { db, auth } from '@/firebase'
-import Swal from 'sweetalert2';
+import Swal from 'sweetalert2'
 
-const emit = defineEmits(["blogUpdated"]);
+const emit = defineEmits(['blogUpdated'])
+const coverImage = ref({} as File)
+const imgUrl = ref('')
 
 const newBlog = ref({
-  title :"",
-  description :"",
-  videoUrl :"",
-  author :"",
-  created_at :new Date(),
+  title: '',
+  description: '',
+  videoUrl: '',
+  author: '',
+  created_at: new Date(),
+  coverImage: '',
 })
 const loading = ref(false)
 
-const handleChange = async (e: Event) => {
-  loading.value = true
+const handleImage = (e: Event) => {
   const target = e.target as HTMLInputElement
   const file = target.files?.[0]
   if (file) {
-    const storage = getStorage()
-    const videoRef = storageRef(storage, 'videos/' + file.name)
-    await uploadBytes(videoRef, file)
-    .then(async()=>{
-      const blogVideoUrl = await getDownloadURL(videoRef);
-      newBlog.value.videoUrl = blogVideoUrl
-      loading.value = false
-    })
-    .catch((err)=>{
-      Swal.fire({
-        position: 'top-end',
-        icon: 'error',
-        title: 'Were sorry, something went wrong. Please try again ',
-        showConfirmButton: false,
-        timer: 1500
-      })
-    })
+    coverImage.value = file
+    imgUrl.value = URL.createObjectURL(coverImage.value)
   }
-  }
+}
 
 const addNewBlog = async () => {
+  loading.value = true
+  const storage = getStorage()
+  if ( coverImage.value.name) {
+    const imageRef = storageRef(storage, 'images/' + coverImage.value.name)
+    await uploadBytes(imageRef, coverImage.value)  
+    const blogCoverImage = await getDownloadURL(imageRef)
+    newBlog.value.coverImage = blogCoverImage
+  }
   const blogRef = collection(db, "blogs");
   newBlog.value.author= auth.currentUser?.displayName as string
   const data = await addDoc(blogRef, newBlog.value)
-  emit("blogUpdated", data.id);
+  emit('blogUpdated', data.id)
+  loading.value = false
 }
 </script>
 
@@ -78,17 +76,21 @@ const addNewBlog = async () => {
       </div>
       <div class="form-control w-full my-3">
         <label class="label">
-          <span class="label-text">Pick a file</span>
+          <span class="label-text">Pick a blog cover</span>
         </label>
         <input
           type="file"
           class="file-input file-input-bordered w-full"
-          ref="videoFile"
-          @change="handleChange"
+          @change="handleImage"
         />
       </div>
       <div class="w-full flex justify-end">
-        <button :class="['btn btn-primary', loading ? 'loading' : '' ]" type="submit">Next</button>
+        <button
+          :class="['btn btn-primary', loading ? 'loading' : '']"
+          type="submit"
+        >
+          Next
+        </button>
       </div>
     </form>
   </div>

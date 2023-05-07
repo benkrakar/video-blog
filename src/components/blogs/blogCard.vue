@@ -1,29 +1,31 @@
 <script setup lang="ts">
-import type { PropType } from 'vue'
+import type {  PropType } from 'vue'
 
-defineProps({
+const props = defineProps({
   blog: { type: Object as PropType<Blog>, required: true },
 })
+
+const blogCoverImg = (item: string) => {
+  if (item) 
+    return item
+  return 'https://i.ibb.co/DYxtCJq/img-1.png'
+}
 </script>
 
 <template>
   <div class="relative min-w-[25rem] hover:-translate-y-2">
     <div >
-      <p
-        class="p-6 text-xs font-medium leading-3 text-white absolute top-0 right-0"
-      >
-        {{ blog.postDate }}
-      </p>
-      <div class="absolute bottom-0 left-0 p-6">
+      <div class="absolute bottom-0 left-0 p-6 bg-black/70 w-full rounded-lg">
         <h2 class="text-xl font-semibold 5 text-white">{{ blog.title }}</h2>
         <p class="text-base leading-4 text-white mt-2">
           {{ blog.author }}
         </p>
-        <a
+        <router-link 
+        :to="`/blog/${blog.id}`"
           href="javascript:void(0)"
           class="focus:outline-none focus:underline flex items-center mt-4 cursor-pointer text-white hover:text-gray-200 hover:underline"
         >
-          <p class="pr-2 text-sm font-medium leading-none">Read More</p>
+          <router-link :to="`/blog/${blog.id}`" class="pr-2 text-sm font-medium leading-none">Read More</router-link>
           <svg
             class="fill-stroke"
             width="16"
@@ -40,9 +42,9 @@ defineProps({
               stroke-linejoin="round"
             />
           </svg>
-        </a>
+        </router-link >
       </div>
     </div>
-    <img src="https://i.ibb.co/DYxtCJq/img-1.png" class="w-full rounded-lg" alt="chair" />
+    <img  :src="blogCoverImg(blog.coverImage)" class="w-[25rem] h-[25rem] rounded-lg"  />
   </div>
 </template>

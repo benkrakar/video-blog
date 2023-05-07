@@ -8,10 +8,12 @@ import {
   updateMetadata,
 } from 'firebase/storage'
 import type { StorageReference } from 'firebase/storage'
-import Swal from 'sweetalert2';
+import Swal from 'sweetalert2'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const props = defineProps({
-  url: { type: String, required: true },
+  sourceVideo: { type: String, required: true },
 })
 
 const videoUrl = ref('')
@@ -26,7 +28,7 @@ const VideoEditor: Ref<HTMLVideoElement | null> = ref(null)
 
 onMounted(async () => {
   const storage = getStorage()
-  videoRef.value = refFromURL(storage, props.url)
+  videoRef.value = refFromURL(storage, props.sourceVideo)
   if (videoRef.value) {
     const url = await getDownloadURL(videoRef.value)
     videoUrl.value = url
@@ -45,15 +47,16 @@ const saveBlog = async () => {
       endTime: endTime.value,
     },
   }
-  await updateMetadata(videoRef.value, metadata)
-  .then(()=>{
+
+  await updateMetadata(videoRef.value, metadata).then(async() => {
     Swal.fire({
-        position: 'top-end',
-        icon: 'success',
-        title: 'Saving the video was successful',
-        showConfirmButton: false,
-        timer: 1500
-      })
+      position: 'top-end',
+      icon: 'success',
+      title: 'Saving the video was successful',
+      showConfirmButton: false,
+      timer: 1500,
+    })
+    router.push("/");
   })
 }
 </script>

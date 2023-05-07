@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import NewBlog from '@/components/blogs/NewBlog.vue'
+import NewBlogVideo from '@/components/blogs/NewBlogVideo.vue'
 import VideoEditor from '@/components/blogs/VideoEditor.vue'
 import { db } from '@/firebase'
 import {
@@ -8,17 +9,23 @@ import {
 } from "firebase/firestore";
 import { ref } from 'vue';
 const source = ref('')
+const blogId = ref('')
 const currentComponent = ref('NewBlog')
 const components: any = ({
   NewBlog,
+  NewBlogVideo,
   VideoEditor
 })
-const blogUpdated = async(id: string)=>{
-  const blogDoc = doc(db, "blogs", id);
-  const blogData = await getDoc(blogDoc);
-  const { videoUrl }  = blogData.data() as any
-  source.value = videoUrl
+
+const videoUpdated = async(blogVideoUrl: string)=>{
+  console.log('dededed' , blogVideoUrl);
+  source.value = blogVideoUrl
   currentComponent.value="VideoEditor"
+}
+
+const blogUpdated = async(id: string)=>{
+  blogId.value = id
+  currentComponent.value="NewBlogVideo"
 }
 </script>
 <template>
@@ -34,7 +41,7 @@ const blogUpdated = async(id: string)=>{
         </ul>
       </div>
       <div class="w-full">
-        <component :is="components[currentComponent]" @blogUpdated="blogUpdated" :url="source"></component>
+        <component :is="components[currentComponent]" @blogUpdated="blogUpdated" @videoUpdated="videoUpdated" :url="blogId" :sourceVideo="source"></component>
       </div>
     </div>
   </div>

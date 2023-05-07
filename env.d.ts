@@ -11,9 +11,13 @@ declare interface User {
 
 declare interface Blog {
   id:string,
-  postDate: string,
+  description: string,
   title: string,
   author: string,
+  coverImage: string,
+  created_at: string,
+  videoUrl: string[],
+
 }
 
 
