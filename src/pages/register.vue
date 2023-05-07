@@ -10,13 +10,14 @@ const passwordToggle = () => {
 }
 
 const user = reactive({
-  fullName:"",
+  firstName:"",
+  lastName:"",
   email:"",
   password:"",
   passwordConfirmation: ""
 })
 
-const login = async () => {
+const register = async () => {
   await store.dispatch('signUp', user)
 }
 </script>
@@ -29,16 +30,27 @@ const login = async () => {
             <div class="text-primary font-bold text-4xl mr-2">Video</div>
             <div class="text-secondary font-bold text-4xl">Blog</div>
           </div>
-          <form @submit.prevent="login">
+          <form @submit.prevent="register">
             <div class="form-control">
               <label class="label">
-                <span class="label-text">Full Name</span>
+                <span class="label-text">First Name</span>
             </label>
             <input
               type="text"
-              placeholder="full name"
+              placeholder="first name"
               class="input input-bordered"
-              v-model="user.fullName"
+              v-model="user.firstName"
+            />
+          </div>
+          <div class="form-control">
+              <label class="label">
+                <span class="label-text">Last Name</span>
+            </label>
+            <input
+              type="text"
+              placeholder="last name"
+              class="input input-bordered"
+              v-model="user.lastName"
             />
           </div>
           <div class="form-control">

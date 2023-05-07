@@ -1,5 +1,5 @@
 <template>
-  <div class="navbar bg-white px-5 sticky top-0 ">
+  <div class="navbar bg-white px-5 sticky top-0">
     <div class="navbar-start">
       <div class="dropdown">
         <label tabindex="0" class="btn btn-ghost lg:hidden">
@@ -18,26 +18,17 @@
             />
           </svg>
         </label>
-        <ul
-          class="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52"
-        >
-          <li><a>Item 1</a></li>
-          <li><a>Item 3</a></li>
-        </ul>
       </div>
-      <div class="flex items-center space-x-2">
-  <div class="text-primary font-bold text-2xl">Video</div>
-  <div class="text-secondary font-bold text-2xl">Blog</div>
-</div>
+      <router-link to="/" class="flex items-center space-x-2">
+        <div class="text-primary font-bold text-2xl">Video</div>
+        <div class="text-secondary font-bold text-2xl">Blog</div>
+      </router-link>
     </div>
-    <div class="navbar-center hidden lg:flex">  
-      <ul class="menu menu-horizontal px-1">
-        <li><a>Item 1</a></li>
-        <li><a>Item 3</a></li>
-      </ul>
+    <div class="navbar-center hidden lg:flex">
+
     </div>
     <div class="navbar-end">
-      <a class="btn btn-primary">Get started</a>
+      <router-link to="/blog/new" class="btn btn-primary">Add blog</router-link>
     </div>
   </div>
 </template>
