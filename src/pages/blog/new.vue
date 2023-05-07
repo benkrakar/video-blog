@@ -1,11 +1,24 @@
 <script setup lang="ts">
-import uploadBlog from '@/components/blogs/fileUpload.vue'
-import videoEdit from '@/components/blogs/videoPlayer.vue'
-import { shallowRef } from 'vue';
-
-const currentComponent = shallowRef(uploadBlog)
-const blogUpdated = ()=>{
-  currentComponent.value = videoEdit
+import NewBlog from '@/components/blogs/NewBlog.vue'
+import VideoEditor from '@/components/blogs/VideoEditor.vue'
+import { db } from '@/firebase'
+import {
+  doc,
+  getDoc,
+} from "firebase/firestore";
+import { ref } from 'vue';
+const source = ref('')
+const currentComponent = ref('NewBlog')
+const components: any = ({
+  NewBlog,
+  VideoEditor
+})
+const blogUpdated = async(id: string)=>{
+  const blogDoc = doc(db, "blogs", id);
+  const blogData = await getDoc(blogDoc);
+  const { videoUrl }  = blogData.data() as any
+  source.value = videoUrl
+  currentComponent.value="VideoEditor"
 }
 </script>
 <template>
@@ -17,11 +30,11 @@ const blogUpdated = ()=>{
       <div class="my-5">
         <ul class="steps">
           <li class="step step-neutral w-60">Add Blog</li>
-          <li class="step ">Edit video</li>
+          <li :class="['step', currentComponent === 'VideoEditor' ? 'step-neutral' : '']">Edit video</li>
         </ul>
       </div>
       <div class="w-full">
-        <component :is="currentComponent"></component>
+        <component :is="components[currentComponent]" @blogUpdated="blogUpdated" :url="source"></component>
       </div>
     </div>
   </div>
