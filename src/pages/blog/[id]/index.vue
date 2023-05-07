@@ -2,7 +2,6 @@
 import { ref, onMounted } from 'vue'
 import type{ Ref } from 'vue'
 import { doc, getDoc } from "firebase/firestore";
-import { getMetadata } from 'firebase/storage'
 import { db } from "@/firebase";
 import { useRoute } from 'vue-router'
 
@@ -36,7 +35,7 @@ onMounted(async () => {
         </video>
 			</div>
 			<div class="p-4">
-				<h1  class="text-gray-800"> {{ blogs }} </h1>
+				<h1  class="text-gray-800"> {{ blogs.title }} </h1>
 			</div>
 			<div class="bg-gray-200 rounded-xl p-8">
 				<p class="text-gray-700">{{ blogs.description}}</p>
