@@ -11,7 +11,7 @@ const currentUser = ref({} as User |null)
 
 onMounted(() => {
   auth.onAuthStateChanged((user) => {
-    currentUser.value = user
+    currentUser.value = user as any
   })
 })
 

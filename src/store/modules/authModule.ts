@@ -1,6 +1,7 @@
 import type { Module, ActionContext } from 'vuex'
 import { auth } from '@/firebase'
 import type firebase from 'firebase/compat/app'
+import type  UserInfo from 'firebase/compat/app'
 
 import {
   createUserWithEmailAndPassword,
@@ -49,7 +50,8 @@ const actions: Actions = {
   async updateProfile({ commit }, userInfo: User | null ) {
     if (userInfo) {
     const {photoURL, phoneNumber, fullName } = userInfo
-      const user = await updateProfile(state.user, { photoURL: photoURL, phoneNumber:phoneNumber,  displayName: fullName });
+      // @ts-ignore
+      const user = await updateProfile(state.user as any, { photoURL: photoURL, phoneNumber:phoneNumber,  displayName: fullName });
       commit('setUser', user);
     }
   },
