@@ -1,45 +1,21 @@
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { ref, onMounted } from 'vue'
+import type{ Ref } from 'vue'
+import { collection, getDocs } from "firebase/firestore";
 import BlogCard from '@/components/blogs/blogCard.vue'
+import { db } from "@/firebase";
+const blogs: Ref<{}[]> = ref([])
 
-const blogs: Blog[] = reactive([
-  {
-    id: '1',
-    postDate: '02/02/2022',
-    title: 'Dummy title',
-    author: 'Dummy Author',
-  },
-  {
-    id: '2',
-    postDate: '02/02/2022',
-    title: 'Dummy title',
-    author: 'Dummy Author',
-  },
-  {
-    id: '3',
-    postDate: '02/02/2022',
-    title: 'Dummy title',
-    author: 'Dummy Author',
-  },
-  {
-    id: '4',
-    postDate: '02/02/2022',
-    title: 'Dummy title',
-    author: 'Dummy Author',
-  },
-  {
-    id: '5',
-    postDate: '02/02/2022',
-    title: 'Dummy title',
-    author: 'Dummy Author',
-  },
-  {
-    id: '6',
-    postDate: '02/02/2022',
-    title: 'Dummy title',
-    author: 'Dummy Author',
-  },
-])
+const getAllBlogs = async () => {
+  const blogCollection = collection(db, "blogs");
+  const blogsSnapshot = await getDocs(blogCollection);
+  const blogs = blogsSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  return blogs;
+};
+
+onMounted(async () => {
+  blogs.value = await getAllBlogs()
+})
 </script>
 
 <template>
