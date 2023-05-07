@@ -2,6 +2,7 @@
 import { ref, reactive } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
+import Swal from 'sweetalert2';
 
 const store = useStore()
 const router = useRouter()
@@ -19,6 +20,11 @@ const login = async () => {
   await store.dispatch('signIn', { email: user.email, password: user.password })
   const currentUser = store.state.auth.user  
   if(!currentUser.emailVerified){
+    Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: 'please confirm your email!',
+    })
     await store.dispatch('logOut')
   } else {
       router.push("/");
@@ -77,10 +83,10 @@ const login = async () => {
                   />
                 </button>
               </div>
-              <label class="label">
-                <a href="#" class="label-text-alt link link-hover">
-                  Forgot password?
-                </a>
+              <label class="flex justify-center my-4 text-4xl font-semibold leading-3 ">
+                <router-link to="/register" class="label-text-alt link link-hover">
+                  New here? Sign up now.
+                </router-link >
               </label>
             </div>
             <div class="form-control mt-6">
