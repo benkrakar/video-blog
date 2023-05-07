@@ -3,9 +3,10 @@
 /// <reference types="vite-plugin-vue-layouts/client" />
 
 declare interface User {
+  phoneNumber: string,
+  photoURL: string,
+  displayName: string,
   fullName: string,
-  email: string,
-  password: string,
 }
 
 declare interface Blog {

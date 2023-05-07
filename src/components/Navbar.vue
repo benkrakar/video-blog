@@ -1,34 +1,44 @@
-<template>
-  <div class="navbar bg-white px-5 sticky top-0">
-    <div class="navbar-start">
-      <div class="dropdown">
-        <label tabindex="0" class="btn btn-ghost lg:hidden">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M4 6h16M4 12h8m-8 6h16"
-            />
-          </svg>
-        </label>
-      </div>
-      <router-link to="/" class="flex items-center space-x-2">
-        <div class="text-primary font-bold text-2xl">Video</div>
-        <div class="text-secondary font-bold text-2xl">Blog</div>
-      </router-link>
-    </div>
-    <div class="navbar-center hidden lg:flex">
+<script setup lang="ts">
+import { onMounted, ref } from 'vue'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
+import { auth } from "@/firebase";
 
-    </div>
-    <div class="navbar-end">
-      <router-link to="/blog/new" class="btn btn-primary">Add blog</router-link>
+const router = useRouter()
+const store = useStore()
+
+const currentUser = ref({} as User |null) 
+
+onMounted(() => {
+  auth.onAuthStateChanged((user) => {
+    currentUser.value = user
+  })
+})
+</script>
+
+<template>
+  <div class="navbar bg-base-100">
+  <div class="flex-1">
+    <router-link to="/" class="btn btn-ghost normal-case text-xl"> {{currentUser?.displayName}}</router-link>
+  </div>
+  <div class="flex-none gap-2">
+    <div class="dropdown dropdown-end">
+      <label tabindex="0" class="btn btn-ghost btn-circle avatar w-16 ">
+        <div class="rounded-full">
+          <img :src="currentUser?.photoURL" />
+        </div>
+      </label>
+      <ul tabindex="0" class="mt-3 p-2 shadow menu menu-compact dropdown-content bg-base-100 rounded-box w-52">
+        <li>
+          <a class="justify-between">
+            Profile
+            <span class="badge">New</span>
+          </a>
+        </li>
+        <li><a>Settings</a></li>
+        <li><a>Logout</a></li>
+      </ul>
     </div>
   </div>
+</div>
 </template>
