@@ -1,26 +1,40 @@
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue'
+import { ref, computed } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import {
   getStorage,
   ref as storageRef,
   uploadBytes,
-  updateMetadata,
   getDownloadURL,
 } from 'firebase/storage'
 import Swal from 'sweetalert2'
+import { useField, useForm } from "vee-validate"
+import * as yup from "yup"
 
 const router = useRouter()
 const store = useStore()
 const newImage = ref({} as File)
 const loading = ref(false)
 const imgUrl = ref('')
-const user = reactive({
-  phoneNumber: '',
-  photoURL: '',
-  fullName: '',
+const scheme = computed(() => {
+  return yup.object({
+    fullName: yup.string().required('full name is a required field'),
+    phoneNumber: yup.string().required('phone number is a required field')
+  })
 })
+const { errors, handleSubmit } = useForm({
+  validationSchema: scheme,
+})
+const { handleChange: FullNameError, value: fullName
+ } = useField('fullName')
+const { handleChange: phoneNumberError, value: phoneNumber } = useField('phoneNumber')
+
+const user = computed(() => ({
+  phoneNumber: phoneNumber.value,
+  photoURL: '',
+  fullName: fullName.value,
+}))
 
 const handleImage = (e: Event) => {
   const target = e.target as HTMLInputElement
@@ -31,14 +45,14 @@ const handleImage = (e: Event) => {
   }
 }
 
-const updateProfile = async () => {
+const updateProfile = handleSubmit(async () => {
   loading.value = true
   const storage = getStorage()
   const imageRef = storageRef(storage, 'images/' + newImage.value.name)
   await uploadBytes(imageRef, newImage.value)
     .then(async () => {
       const profileImageUrl = await getDownloadURL(imageRef)
-      user.photoURL = profileImageUrl
+      user.value.photoURL = profileImageUrl
       await store.dispatch('updateProfile', user).then(() => {
         loading.value = false
         Swal.fire({
@@ -61,7 +75,7 @@ const updateProfile = async () => {
         timer: 1500,
       })
     })
-}
+})
 </script>
 <template>
   <main>
@@ -79,10 +93,12 @@ const updateProfile = async () => {
           </label>
           <input
             type="text"
-            placeholder="first name"
+            placeholder="full name "
             class="input input-bordered"
-            v-model="user.fullName"
+            @input="FullNameError"
+            v-model="fullName"
           />
+          <span v-if="errors.fullName" class="text-red-500 p-2">{{ errors.fullName }}</span>
         </div>
       <div class="form-control">
         <label class="label">
@@ -92,8 +108,10 @@ const updateProfile = async () => {
           type="number"
           placeholder="phone number"
           class="input input-bordered"
-          v-model="user.phoneNumber"
+          @input="phoneNumberError"
+          v-model="phoneNumber"
         />
+        <span v-if="errors.phoneNumber" class="text-red-500 p-2">{{ errors.phoneNumber }}</span>
       </div>
 
       <div class="form-control">

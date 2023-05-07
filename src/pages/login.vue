@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, computed } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import Swal from 'sweetalert2';
+import { useField, useForm } from "vee-validate"
+import * as yup from "yup" 
 
 const store = useStore()
 const router = useRouter()
@@ -11,13 +13,27 @@ const passwordToggle = () => {
   passwordType.value = passwordType.value === 'password' ? 'text' : 'password'
 }
 
-const user = reactive({
-  email:"",
-  password:"",
+const scheme = computed(() => {
+  return yup.object({
+    email: yup
+    .string()
+    .required('Please fill out this field. It is required for submission.')
+    .email('Please enter a valid email address in this field.'),
+    password: yup
+    .string()
+      .required('Please fill out this field. It is required for submission.')
+      .min(8, 'This field must contain at least 8 characters. Please enter a valid value.')
+      .max(30, 'This field must not exceed 30 characters. Please enter a valid value.'),
+  })
 })
+const { errors, handleSubmit } = useForm({
+  validationSchema: scheme,
+})
+const { handleChange: mailError, value: email } = useField('email')
+const { handleChange: passwordError, value: password } = useField('password')
 
-const login = async () => {
-  await store.dispatch('signIn', { email: user.email, password: user.password })
+const login = handleSubmit(async () => {
+  await store.dispatch('signIn', { email: email.value, password: password.value })
   const currentUser = store.state.auth.user  
   if(!currentUser.emailVerified){
     Swal.fire({
@@ -29,7 +45,7 @@ const login = async () => {
   } else {
       router.push("/");
   };
-}
+})
 
 </script>
 <template>
@@ -50,10 +66,12 @@ const login = async () => {
             <input
               type="text"
               placeholder="email"
-                 v-model="user.email"
+              v-model="email"
               class="input input-bordered"
               name="email"
+              @input="mailError"
             />
+            <span v-if="errors.email" class="text-red-500 p-2">{{ errors.email }}</span>
           </div>
           <div class="form-control">
             <label class="label">
@@ -65,11 +83,13 @@ const login = async () => {
                 :type="passwordType"
                 placeholder="password"
                 class="input input-bordered w-full"
-                v-model="user.password"
-                  name="password"
+                v-model="password"
+                name="password"
+                @input="passwordError"
               />
               <button
-                v-if="user.password"
+                v-if="password"
+                type="button"
                 class="absolute top-1/2 right-2 -mt-2 text-gray-500"
                 @click="passwordToggle"
               >
@@ -83,6 +103,7 @@ const login = async () => {
                   />
                 </button>
               </div>
+              <span v-if="errors.password" class="text-red-500 p-2">{{ errors.password }}</span>
               <label class="flex justify-center my-4 text-4xl font-semibold leading-3 ">
                 <router-link to="/register" class="label-text-alt link link-hover">
                   New here? Sign up now.

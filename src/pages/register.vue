@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import NewProfile from '@/components/register/NewProfile.vue'
 import ProfileInfo from '@/components/register/ProfileInfo.vue'
 
-const currentComponent = ref('NewProfile')
+const currentComponent = ref('ProfileInfo')
 const components: any = {
   NewProfile,
   ProfileInfo,
