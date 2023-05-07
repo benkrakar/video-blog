@@ -17,7 +17,8 @@ interface State {
 interface Actions {
   [key: string]: (context: ActionContext<State, any>, payload: any) => Promise<void>
   signIn(context: ActionContext<State, any>, { email, password }: { email: string, password: string }): Promise<void>
-  signUp(context: ActionContext<State, any>, credentials: User): Promise<void>
+  signUp(context: ActionContext<State, any>,  { email, password }: { email: string, password: string }): Promise<void>
+  updateProfile(context: ActionContext<State, any>, credentials: User): Promise<void>
   logOut(context: ActionContext<State, any>): Promise<void>
 }
 
@@ -37,15 +38,20 @@ const actions: Actions = {
     commit('setUser', auth.currentUser)
   },
 
-  async signUp({ commit }, userInfo: User) {
-    const { fullName, email, password } = userInfo
+  async signUp({ commit }, { email, password}) {
     const { user } = await createUserWithEmailAndPassword(auth, email, password)
     if (user) {
-      await updateProfile(user, { displayName: fullName });
       await sendEmailVerification(user);
       commit('setUser', user);
     }
-    commit('setUser', auth.currentUser)
+  },
+
+  async updateProfile({ commit }, userInfo: User | null ) {
+    if (userInfo) {
+    const {photoURL, phoneNumber, fullName } = userInfo
+      const user = await updateProfile(state.user, { photoURL: photoURL, phoneNumber:phoneNumber,  displayName: fullName });
+      commit('setUser', user);
+    }
   },
 
   async logOut({ commit }) {

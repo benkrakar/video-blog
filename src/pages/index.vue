@@ -56,6 +56,7 @@ const blogs: Blog[] = reactive([
             If you're looking for random paragraphs, you've come to the right
             place. When a random word or a random sentence isn't quite enough
           </p>
+          <router-link to="/blog/new" class="btn btn-primary my-4">Add new blog</router-link>
         </div>
         <div class="lg:flex items-stretch md:mt-12 mt-8">
           <div class="sm:flex items-center justify-center gap-6 flex-wrap">

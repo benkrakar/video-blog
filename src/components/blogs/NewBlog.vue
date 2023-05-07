@@ -4,7 +4,7 @@ import {
   addDoc,
   collection,
 } from "firebase/firestore";
-import { getStorage, ref as storageRef, uploadBytes, updateMetadata, getDownloadURL } from "firebase/storage";
+import { getStorage, ref as storageRef, uploadBytes,  getDownloadURL } from "firebase/storage";
 import { db, auth } from '@/firebase'
 import Swal from 'sweetalert2';
 
@@ -17,10 +17,10 @@ const newBlog = ref({
   author :"",
   created_at :new Date(),
 })
-const download = ref(false)
+const loading = ref(false)
 
 const handleChange = async (e: Event) => {
-  download.value = true
+  loading.value = true
   const target = e.target as HTMLInputElement
   const file = target.files?.[0]
   if (file) {
@@ -30,7 +30,7 @@ const handleChange = async (e: Event) => {
     .then(async()=>{
       const blogVideoUrl = await getDownloadURL(videoRef);
       newBlog.value.videoUrl = blogVideoUrl
-      download.value = false
+      loading.value = false
     })
     .catch((err)=>{
       Swal.fire({
@@ -88,7 +88,7 @@ const addNewBlog = async () => {
         />
       </div>
       <div class="w-full flex justify-end">
-        <button :class="['btn btn-primary', download ? 'loading' : '' ]" type="submit">Next</button>
+        <button :class="['btn btn-primary', loading ? 'loading' : '' ]" type="submit">Next</button>
       </div>
     </form>
   </div>
