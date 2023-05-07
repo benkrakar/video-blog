@@ -35,7 +35,7 @@ const handleChange = async (e: Event) => {
     .catch((err)=>{
       Swal.fire({
         position: 'top-end',
-        icon: 'success',
+        icon: 'error',
         title: 'Were sorry, something went wrong. Please try again ',
         showConfirmButton: false,
         timer: 1500

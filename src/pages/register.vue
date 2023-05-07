@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
 import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
+import Swal from 'sweetalert2';
 
+const router = useRouter()
 const store = useStore()
 const passwordType = ref('password')
 
@@ -10,15 +13,27 @@ const passwordToggle = () => {
 }
 
 const user = reactive({
-  firstName:"",
-  lastName:"",
+  fullName:"",
   email:"",
   password:"",
-  passwordConfirmation: ""
 })
 
 const register = async () => {
   await store.dispatch('signUp', user)
+  .then(()=>{
+    router.push("/login");
+  })
+  .catch((err)=>{
+    console.log(err.message.error);
+    
+    Swal.fire({
+        position: 'top-end',
+        icon: 'error',
+        title: 'email already in use',
+        showConfirmButton: false,
+        timer: 1500
+      })
+    })
 }
 </script>
 <template>
@@ -33,24 +48,13 @@ const register = async () => {
           <form @submit.prevent="register">
             <div class="form-control">
               <label class="label">
-                <span class="label-text">First Name</span>
+                <span class="label-text">Full name</span>
             </label>
             <input
               type="text"
               placeholder="first name"
               class="input input-bordered"
-              v-model="user.firstName"
-            />
-          </div>
-          <div class="form-control">
-              <label class="label">
-                <span class="label-text">Last Name</span>
-            </label>
-            <input
-              type="text"
-              placeholder="last name"
-              class="input input-bordered"
-              v-model="user.lastName"
+              v-model="user.fullName"
             />
           </div>
           <div class="form-control">
@@ -91,36 +95,8 @@ const register = async () => {
               </button>
             </div>
           </div>
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text">Confirm Password</span>
-            </label>
-            <div class="relative">
-              <input
-              :type="passwordType"
-              placeholder="confirm password "
-              class="input input-bordered w-full"
-              v-model="user.passwordConfirmation"
-              />
-              <button
-              v-if="user.passwordConfirmation"
-                class="absolute top-1/2 right-2 -mt-2 text-gray-500"
-                @click="passwordToggle"
-              >
-                <Icon
-                  :icon="
-                    passwordType === 'password'
-                      ? 'mdi:eye-outline'
-                      : 'mdi:eye-off-outline'
-                      "
-                  class="text-lg"
-                />
-              </button>
-            </div>
-          
-          </div>
           <div class="form-control mt-6">
-            <button class="btn btn-primary">Login</button>
+            <button class="btn btn-primary">Register</button>
           </div>
         </form>
         </div>

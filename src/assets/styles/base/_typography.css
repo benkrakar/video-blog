@@ -11,5 +11,5 @@ h3 {
 }
 
 .main-title {
-  @apply text-4xl font-semibold leading-3 text-center ;
+  @apply text-4xl font-semibold  text-center ;
 }
