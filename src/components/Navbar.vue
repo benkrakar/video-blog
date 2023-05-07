@@ -14,6 +14,14 @@ onMounted(() => {
     currentUser.value = user
   })
 })
+
+const Logout = async() => {
+  await store
+    .dispatch('logOut')
+    .then(() => {
+      router.push('/login')
+    })
+}
 </script>
 
 <template>
@@ -36,7 +44,7 @@ onMounted(() => {
           </a>
         </li>
         <li><a>Settings</a></li>
-        <li><a>Logout</a></li>
+        <li><button @click="Logout">Logout</button></li>
       </ul>
     </div>
   </div>

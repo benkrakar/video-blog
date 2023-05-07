@@ -5,7 +5,6 @@ import { useRouter } from 'vue-router'
 import Swal from 'sweetalert2'
 
 const emit = defineEmits(["addUserInfo"]);
-const router = useRouter()
 const store = useStore()
 const passwordType = ref('password')
 
