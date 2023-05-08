@@ -1,39 +1,42 @@
 <script setup lang="ts">
 import { ref, onMounted, reactive } from 'vue'
 import type { Ref } from 'vue'
-import {
-  getStorage,
-  ref as refFromURL,
-  getDownloadURL,
-  updateMetadata,
-} from 'firebase/storage'
-import type { StorageReference } from 'firebase/storage'
+import { DocumentReference, doc, getDoc, updateDoc } from "firebase/firestore";
+import { db } from '@/firebase'
 import Swal from 'sweetalert2'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const props = defineProps({
   sourceVideo: { type: String, required: true },
+  blogId: { type: String, required: true },
 })
 
+const video = ref([] )
+const videoRef = ref({})
 const videoUrl = ref('')
+const videoIndex = ref(0)
 const startTime = ref(0)
 const endTime = ref(0)
-const videoRef = ref({} as StorageReference)
 const videoDuration = reactive({
   minutes: 0,
   seconds: 0,
 })
 const VideoEditor: Ref<HTMLVideoElement | null> = ref(null)
 
-onMounted(async () => {
-  const storage = getStorage()
-  videoRef.value = refFromURL(storage, props.sourceVideo)
-  if (videoRef.value) {
-    const url = await getDownloadURL(videoRef.value)
-    videoUrl.value = url
+onMounted(async () => {  
+  videoRef.value = doc(db, "blogs", props.blogId);
+  const blogSnapshot = await getDoc(videoRef.value as DocumentReference<unknown>);
+  if (blogSnapshot.exists()) {
+  video.value = await blogSnapshot.data()?.videos;  
+  video.value.forEach((video: any, index:number) => {
+  if (video.videoUrl === videoUrl) {
+    videoIndex.value = index;
   }
+});
+}
 })
+
 const handleLoadedMetadata = () => {
   if (VideoEditor.value) {
     videoDuration.minutes = Math.floor(VideoEditor.value.duration / 60)
@@ -41,14 +44,11 @@ const handleLoadedMetadata = () => {
   }
 }
 const saveBlog = async () => {
-  const metadata: any = {
-    customMetadata: {
-      startTime: startTime.value,
-      endTime: endTime.value,
-    },
-  }
-
-  await updateMetadata(videoRef.value, metadata).then(async() => {
+  video.value[videoIndex.value].startTime = startTime.value;
+  video.value[videoIndex.value].endTime = endTime.value;
+  const blogRef = doc(db, "blogs", props.blogId);
+  await updateDoc(blogRef, { videos: video.value })
+  .then(()=>{
     Swal.fire({
       position: 'top-end',
       icon: 'success',
@@ -56,7 +56,7 @@ const saveBlog = async () => {
       showConfirmButton: false,
       timer: 1500,
     })
-    router.push("/");
+    router.push(`/blog/${props.blogId}`);
   })
 }
 </script>
@@ -64,7 +64,7 @@ const saveBlog = async () => {
 <template>
   <form @submit.prevent="saveBlog">
     <div class="flex justify-around w-full gap-5 shadow-xl p-5 rounded-xl">
-      <div v-if="videoUrl" class="flex-1">
+      <div v-if="sourceVideo" class="flex-1">
         <video
           controls
           autoplay
@@ -72,7 +72,7 @@ const saveBlog = async () => {
           class="rounded-xl"
           @loadedmetadata="handleLoadedMetadata"
         >
-          <source :src="videoUrl" type="video/mp4" />
+          <source :src="sourceVideo" type="video/mp4" />
         </video>
       </div>
       <div class="flex-1">

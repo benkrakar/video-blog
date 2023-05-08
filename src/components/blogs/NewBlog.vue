@@ -8,7 +8,6 @@ import {
   getDownloadURL,
 } from 'firebase/storage'
 import { db, auth } from '@/firebase'
-import Swal from 'sweetalert2'
 
 const emit = defineEmits(['blogUpdated'])
 const coverImage = ref({} as File)
@@ -17,7 +16,6 @@ const imgUrl = ref('')
 const newBlog = ref({
   title: '',
   description: '',
-  videoUrl: '',
   author: '',
   created_at: new Date(),
   coverImage: '',

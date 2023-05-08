@@ -18,7 +18,6 @@ const components: any = ({
 })
 
 const videoUpdated = async(blogVideoUrl: string)=>{
-  console.log('dededed' , blogVideoUrl);
   source.value = blogVideoUrl
   currentComponent.value="VideoEditor"
 }
@@ -41,7 +40,7 @@ const blogUpdated = async(id: string)=>{
         </ul>
       </div>
       <div class="w-full">
-        <component :is="components[currentComponent]" @blogUpdated="blogUpdated" @videoUpdated="videoUpdated" :url="blogId" :sourceVideo="source"></component>
+        <component :is="components[currentComponent]" @blogUpdated="blogUpdated" @videoUpdated="videoUpdated" :blogId="blogId" :sourceVideo="source"></component>
       </div>
     </div>
   </div>
