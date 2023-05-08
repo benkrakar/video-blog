@@ -16,8 +16,13 @@ declare interface Blog {
   author: string,
   coverImage: string,
   created_at: string,
-  videos: string[],
+  videos: Videos[],
+}
 
+declare interface Videos {
+  url:string,
+  startTime: number,
+  endTime: number,
 }
 
 

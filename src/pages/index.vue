@@ -4,7 +4,7 @@ import type{ Ref } from 'vue'
 import { collection, getDocs } from "firebase/firestore";
 import BlogCard from '@/components/blogs/blogCard.vue'
 import { db } from "@/firebase";
-const blogs: Ref<{}[]> = ref([])
+const blogs: Ref<Blog[]> = ref([])
 
 const getAllBlogs = async () => {
   const blogCollection = collection(db, "blogs");
@@ -14,7 +14,7 @@ const getAllBlogs = async () => {
 };
 
 onMounted(async () => {
-  blogs.value = await getAllBlogs()
+  blogs.value = await getAllBlogs() as Blog[]
 })
 </script>
 
