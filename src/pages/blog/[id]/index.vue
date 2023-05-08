@@ -26,12 +26,12 @@ onMounted(async () => {
 		<div class="lg:col-span-2 h-fit">
 			<div class="flex items-center justify-center min-h-[32rem] bg-gray-200 h-full rounded-lg p-4">
 				<video
-        v-if="blogs.videoUrl"
+        v-if="blogs.videos"
           controls
           autoplay
           class="rounded-xl"
         >
-          <source :src="blogs.videoUrl[0]" type="video/mp4" />
+          <source :src="blogs.videos[0].url" type="video/mp4" />
         </video>
 			</div>
 			<div class="p-4">

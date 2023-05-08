@@ -16,7 +16,7 @@ declare interface Blog {
   author: string,
   coverImage: string,
   created_at: string,
-  videoUrl: string[],
+  videos: string[],
 
 }
 

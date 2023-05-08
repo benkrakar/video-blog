@@ -8,8 +8,14 @@ import {
 import { getStorage, ref as storageRef, uploadBytes,  getDownloadURL } from "firebase/storage";
 import { db,  } from '@/firebase'
 
+const videoData = ref({
+  url: '',
+  startTime:'',
+  endTime:'',
+})
+
 const props = defineProps({
-  url: { type: String, required: true },
+  blogId: { type: String, required: true },
 })
 const emit = defineEmits(["videoUpdated"]);
 const blogVideo = ref({} as File)
@@ -28,13 +34,14 @@ const handleChange = async (e: Event) => {
 const updateBlog = async () => {
   loading.value = true
   const storage = getStorage()
-    const videoRef = storageRef(storage, 'videos/' +props.url)
+    const videoRef = storageRef(storage, 'videos/' +props.blogId)
     await uploadBytes(videoRef, blogVideo.value)
     .then(async()=>{
       const blogVideoUrl = await getDownloadURL(videoRef);
-      const blogRef = doc(db, "blogs", props.url);
+      videoData.value.url = blogVideoUrl
+      const blogRef = doc(db, "blogs", props.blogId);
         const updatedBlogData = {
-          videoUrl: arrayUnion(blogVideoUrl),
+          videos: arrayUnion(videoData.value),
         };
       await updateDoc(blogRef, updatedBlogData)
       .then(()=>{
