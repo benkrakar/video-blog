@@ -8,11 +8,7 @@ import {
 import { getStorage, ref as storageRef, uploadBytes,  getDownloadURL } from "firebase/storage";
 import { db,  } from '@/firebase'
 
-const videoData = ref({
-  url: '',
-  startTime:'',
-  endTime:'',
-})
+const videoData = ref({} as Videos)
 
 const props = defineProps({
   blogId: { type: String, required: true },

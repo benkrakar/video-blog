@@ -12,7 +12,7 @@ const props = defineProps({
   blogId: { type: String, required: true },
 })
 
-const video = ref([] )
+const video = ref([] as Videos[])
 const videoRef = ref({})
 const videoUrl = ref('')
 const videoIndex = ref(0)
@@ -26,7 +26,7 @@ const VideoEditor: Ref<HTMLVideoElement | null> = ref(null)
 
 onMounted(async () => {  
   videoRef.value = doc(db, "blogs", props.blogId);
-  const blogSnapshot = await getDoc(videoRef.value as DocumentReference<unknown>);
+  const blogSnapshot = await getDoc(videoRef.value as DocumentReference<Blog>);
   if (blogSnapshot.exists()) {
   video.value = await blogSnapshot.data()?.videos;  
   video.value.forEach((video: any, index:number) => {
