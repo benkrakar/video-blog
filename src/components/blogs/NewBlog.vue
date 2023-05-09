@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { addDoc, collection } from 'firebase/firestore'
+import { ref, onMounted } from 'vue'
+import { addDoc, collection, limit, orderBy, query, getDocs } from 'firebase/firestore'
 import {
   getStorage,
   ref as storageRef,
@@ -8,8 +8,9 @@ import {
   getDownloadURL,
 } from 'firebase/storage'
 import { db, auth } from '@/firebase'
+import Swal from 'sweetalert2'
 
-const emit = defineEmits(['blogUpdated'])
+const emit = defineEmits(['blogUpdated', 'updateExistingBlog'])
 const coverImage = ref({} as File)
 const imgUrl = ref('')
 
@@ -21,6 +22,29 @@ const newBlog = ref({
   coverImage: '',
 })
 const loading = ref(false)
+
+onMounted(async () => {
+  const lastVideosQuery = query(
+    collection(db, 'blogs'),
+    orderBy('created_at', 'desc'),
+    limit(1)
+  )
+  const lastVideosSnapshot = await getDocs(lastVideosQuery)
+  const lastVideo = lastVideosSnapshot.docs[0]
+  if (lastVideo) {
+    const lastVideoData = lastVideo.data()
+    const indexOfLastVideo = lastVideoData.videos?.length - 1
+    if (indexOfLastVideo >= 0 && (!lastVideoData.videos[indexOfLastVideo].startTime || !lastVideoData.videos[indexOfLastVideo].endTime)) {
+      const videoUrl =   lastVideoData.videos[indexOfLastVideo].url
+      Swal.fire({
+          icon: 'warning',
+          title: 'Unfinished blog',
+          text: 'Please finish your last blog then you create new one',
+        })
+      emit('updateExistingBlog', lastVideo.id, videoUrl)
+    }
+  }
+})
 
 const handleImage = (e: Event) => {
   const target = e.target as HTMLInputElement
