@@ -15,7 +15,6 @@ const props = defineProps({
 })
 
 const video = ref([] as Videos[])
-const videoRef = ref({})
 const videoUrl = ref('')
 const videoIndex = ref(0)
 const videoSeconds = ref(0)
@@ -50,8 +49,8 @@ const { handleChange: endTimeError, value: endTime } = useField<number>('endTime
  
 
 onMounted(async () => {  
-  videoRef.value = doc(db, "blogs", props.blogId);
-  const blogSnapshot = await getDoc(videoRef.value as DocumentReference<Blog>);
+  const videoRef = doc(db, "blogs", props.blogId);
+  const blogSnapshot = await getDoc(videoRef as DocumentReference<Blog>);
   if (blogSnapshot.exists()) {
   video.value = await blogSnapshot.data()?.videos;  
   video.value.forEach((video: any, index:number) => {
