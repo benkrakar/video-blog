@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useStore } from 'vuex'
-import { useRouter } from 'vue-router'
 import {
   getStorage,
   ref as storageRef,
@@ -9,26 +7,27 @@ import {
   getDownloadURL,
 } from 'firebase/storage'
 import Swal from 'sweetalert2'
-import { useField, useForm } from "vee-validate"
-import * as yup from "yup"
+import { useField, useForm } from 'vee-validate'
+import * as yup from 'yup'
 
-const router = useRouter()
-const store = useStore()
+const emit = defineEmits(['submitUser'])
+
 const newImage = ref({} as File)
 const loading = ref(false)
 const imgUrl = ref('')
 const scheme = computed(() => {
   return yup.object({
     fullName: yup.string().required('full name is a required field'),
-    phoneNumber: yup.string().required('phone number is a required field')
+    phoneNumber: yup.string().required('phone number is a required field'),
   })
 })
 const { errors, handleSubmit } = useForm({
   validationSchema: scheme,
 })
-const { handleChange: FullNameError, value: fullName
- } = useField('fullName')
-const { handleChange: phoneNumberError, value: phoneNumber } = useField('phoneNumber')
+const { handleChange: FullNameError, value: fullName } = useField('fullName')
+const { handleChange: phoneNumberError, value: phoneNumber } = useField(
+  'phoneNumber',
+)
 
 const user = computed(() => ({
   phoneNumber: phoneNumber.value,
@@ -53,20 +52,10 @@ const updateProfile = handleSubmit(async () => {
     .then(async () => {
       const profileImageUrl = await getDownloadURL(imageRef)
       user.value.photoURL = profileImageUrl
-      await store.dispatch('updateProfile', user).then(() => {
-        loading.value = false
-        Swal.fire({
-          title: 'Congratulations',
-          text: "A confirmation email has been sent to you in order to activate your account.",
-          icon: 'success',
-          confirmButtonColor: '#3085d6',
-          confirmButtonText: 'Great',
-        }).then(() => {
-          router.push('/login')
-        })
-      })
+      emit('submitUser', user.value)
     })
     .catch((err) => {
+      loading.value = false
       Swal.fire({
         position: 'top-end',
         icon: 'error',
@@ -88,18 +77,20 @@ const updateProfile = handleSubmit(async () => {
         </div>
       </div>
       <div class="form-control">
-          <label class="label">
-            <span class="label-text">Full name</span>
-          </label>
-          <input
-            type="text"
-            placeholder="full name "
-            class="input input-bordered"
-            @input="FullNameError"
-            v-model="fullName"
-          />
-          <span v-if="errors.fullName" class="text-red-500 p-2">{{ errors.fullName }}</span>
-        </div>
+        <label class="label">
+          <span class="label-text">Full name</span>
+        </label>
+        <input
+          type="text"
+          placeholder="full name "
+          class="input input-bordered"
+          @input="FullNameError"
+          v-model="fullName"
+        />
+        <span v-if="errors.fullName" class="text-red-500 p-2">
+          {{ errors.fullName }}
+        </span>
+      </div>
       <div class="form-control">
         <label class="label">
           <span class="label-text">Phone number</span>
@@ -111,7 +102,9 @@ const updateProfile = handleSubmit(async () => {
           @input="phoneNumberError"
           v-model="phoneNumber"
         />
-        <span v-if="errors.phoneNumber" class="text-red-500 p-2">{{ errors.phoneNumber }}</span>
+        <span v-if="errors.phoneNumber" class="text-red-500 p-2">
+          {{ errors.phoneNumber }}
+        </span>
       </div>
 
       <div class="form-control">
@@ -126,7 +119,9 @@ const updateProfile = handleSubmit(async () => {
         />
       </div>
       <div class="form-control mt-6">
-        <button :class="['btn btn-primary', loading ? 'loading' : '' ]" >Save</button>
+        <button :class="['btn btn-primary', loading ? 'loading' : '']">
+          Save
+        </button>
       </div>
     </form>
   </main>

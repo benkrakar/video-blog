@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { addDoc, collection, limit, orderBy, query, getDocs } from 'firebase/firestore'
+import { addDoc, collection, limit, orderBy, query, getDocs, where } from 'firebase/firestore'
 import {
   getStorage,
   ref as storageRef,
@@ -9,6 +9,7 @@ import {
 } from 'firebase/storage'
 import { db, auth } from '@/firebase'
 import Swal from 'sweetalert2'
+import Cookies from 'js-cookie'
 
 const emit = defineEmits(['blogUpdated', 'updateExistingBlog'])
 const coverImage = ref({} as File)
@@ -24,11 +25,14 @@ const newBlog = ref({
 const loading = ref(false)
 
 onMounted(async () => {
+  const loggedInUser = Cookies.get('loggedInUser')
+  const user = JSON.parse(loggedInUser as string)  
   const lastVideosQuery = query(
     collection(db, 'blogs'),
     orderBy('created_at', 'desc'),
+    where('author', '==', user.displayName),
     limit(1)
-  )
+  )  
   const lastVideosSnapshot = await getDocs(lastVideosQuery)
   const lastVideo = lastVideosSnapshot.docs[0]
   if (lastVideo) {

@@ -7,6 +7,8 @@ declare interface User {
   phoneNumber: string,
   fullName: string,
   photoURL: string,
+  email:string,
+  password:string,
 }
 
 declare interface Blog {

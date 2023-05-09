@@ -1,12 +1,9 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useStore } from 'vuex'
-import Swal from 'sweetalert2'
 import { useField, useForm } from "vee-validate"
 import * as yup from "yup" 
 
 const emit = defineEmits(["addUserInfo"]);
-const store = useStore()
 const passwordType = ref('password')
 
 const passwordToggle = () => {
@@ -38,20 +35,7 @@ const user = computed(() => ({
 }));
 
 const register = handleSubmit(async () => {
-  await store
-    .dispatch('signUp', user.value)
-    .then(() => {
-    emit("addUserInfo");
-    })
-    .catch((err) => {
-      Swal.fire({
-        position: 'top-end',
-        icon: 'error',
-        title: 'email already in use',
-        showConfirmButton: false,
-        timer: 1500,
-      })
-    })
+    emit("addUserInfo", user.value);
 })
 </script>
 <template>
