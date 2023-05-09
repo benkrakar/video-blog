@@ -8,8 +8,8 @@ import { useRoute } from 'vue-router'
 const blogs: Ref<Blog> = ref({} as Blog)
 const route = useRoute()
 
+const id = route.params.id
 const getBlogById = async () => {
-  const id = route.params.id
   const blogDoc = doc(db, "blogs", id.toString());
   const blogSnapshot = await getDoc(blogDoc);
   const blog = { id: blogSnapshot.id, ...blogSnapshot.data() };
@@ -22,9 +22,14 @@ onMounted(async () => {
 </script>
 <template>
 <div v-if="blogs">
+  
 	<div class="grid grid-cols-1 lg:grid-cols-1 gap-4 p-10 bg-white shadow-md m-6 rounded-xl">
-		<div class="lg:col-span-2 h-fit">
-			<div class="flex items-center justify-center min-h-[32rem] bg-gray-200 h-full rounded-lg p-4">
+    <div class="lg:col-span-2 h-fit">
+      <dir class="flex justify-between items-center p-0">
+        <h1  class="text-gray-800 max-w-[50%] break-words"> {{ blogs.title }} </h1>
+        <router-link :to="`/blog/${id}/edit` " class="btn btn-primary my-4  ">Edit </router-link>
+      </dir>
+      <div class="flex items-center justify-center min-h-[32rem] bg-gray-200 h-full rounded-lg p-4">
 				<video
         v-if="blogs.videos"
           controls
@@ -34,11 +39,8 @@ onMounted(async () => {
           <source :src="blogs.videos[0].url" type="video/mp4" />
         </video>
 			</div>
-			<div class="p-4">
-				<h1  class="text-gray-800"> {{ blogs.title }} </h1>
-			</div>
-			<div class="bg-gray-200 rounded-xl p-8">
-				<p class="text-gray-700">{{ blogs.description}}</p>
+			<div class="bg-gray-200 rounded-xl p-8 my-4">
+				<p class="text-gray-700">description: {{ blogs.description}}</p>
 			</div>
 		</div>
 	</div>
