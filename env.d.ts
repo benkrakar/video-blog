@@ -23,6 +23,7 @@ declare interface Blog {
 
 declare interface Videos {
   url:string,
+  title:string,
   startTime: number,
   endTime: number,
 }
