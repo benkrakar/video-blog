@@ -35,6 +35,9 @@ const VideoEditor: Ref<HTMLVideoElement | null> = ref(null)
       .number()
       .min(yup.ref('startTime'), "End time must be greater than start time")
       .max(videoSeconds.value,  'The value you enter must be less than or equal to the current video time.')
+      .required("This field is requried"),
+    videoTitle: yup
+      .string()
       .required("This field is requried")
   })
 })
@@ -46,6 +49,7 @@ const { errors, handleSubmit } = useForm({
 
 const { handleChange: startTimeError, value: startTime, } = useField<number>('startTime')
 const { handleChange: endTimeError, value: endTime } = useField<number>('endTime')
+const { handleChange: videoTitleError, value: videoTitle } = useField<string>('videoTitle')
  
 
 onMounted(async () => {  
@@ -54,7 +58,7 @@ onMounted(async () => {
   if (blogSnapshot.exists()) {
   video.value = await blogSnapshot.data()?.videos;  
   video.value.forEach((video: any, index:number) => {
-  if (video.videoUrl === videoUrl) {
+    if (video.url === props.sourceVideo) {      
     videoIndex.value = index;
   }
 });
@@ -72,6 +76,7 @@ const handleLoadedMetadata = () => {
 const saveBlog = handleSubmit(async() => {
   video.value[videoIndex.value].startTime = startTime.value;
   video.value[videoIndex.value].endTime = endTime.value;
+  video.value[videoIndex.value].title = videoTitle.value;
   const blogRef = doc(db, "blogs", props.blogId);
   await updateDoc(blogRef, { videos: video.value })
   .then(()=>{
@@ -89,6 +94,7 @@ const saveBlog = handleSubmit(async() => {
 
 <template>
   <form @submit.prevent="saveBlog">
+    <p>{{ videoIndex }}</p>
     <div class="flex justify-around w-full gap-5 shadow-xl p-5 rounded-xl flex-col lg:flex-row">
       <div v-if="sourceVideo" class="flex-1">
         <video
@@ -103,6 +109,19 @@ const saveBlog = handleSubmit(async() => {
       </div>
       <div class="flex-1">
         <div class="w-full lg:w-3/4">
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text">video Title</span>
+            </label>
+            <input
+              type="text"
+              placeholder="video title"
+              class="input input-bordered w-full"
+              v-model="videoTitle"
+              @input="videoTitleError"
+            />
+            <span v-if="errors.videoTitle" class="text-red-500 p-2">{{ errors.videoTitle }}</span>
+          </div>
           <div class="form-control">
             <label class="label">
               <span class="label-text">Start time (s)</span>

@@ -25,9 +25,7 @@ const addUserInfo = async ({email, password}: User ) => {
 
 const submitUser = async (userInfo: User) => {
       loading.value = true
-      user.value = {...user.value, ...userInfo}      
-      console.log(user.value);
-      
+      user.value = {...user.value, ...userInfo}            
       await store.dispatch('signUp', user.value).then(() => {
         loading.value = false
         Swal.fire({

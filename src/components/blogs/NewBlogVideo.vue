@@ -30,7 +30,9 @@ const handleChange = async (e: Event) => {
 const updateBlog = async () => {
   loading.value = true
   const storage = getStorage()
-    const videoRef = storageRef(storage, 'videos/' +props.blogId)
+  const currentDate = new Date();
+  const timestamp = currentDate.getTime();
+  const videoRef = storageRef(storage, 'videos/' + props.blogId + '/' + timestamp);
     await uploadBytes(videoRef, blogVideo.value)
     .then(async()=>{
       const blogVideoUrl = await getDownloadURL(videoRef);
@@ -69,6 +71,7 @@ const updateBlog = async () => {
           type="file"
           class="file-input file-input-bordered w-full"
           ref="videoFile"
+          accept="video/*"
           @change="handleChange"
         />
       </div>
