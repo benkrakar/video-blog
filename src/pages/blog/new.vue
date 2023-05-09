@@ -37,7 +37,7 @@ const updateExistingBlog = async(id: string, blogVideoUrl:string)=>{
       <div class="my-5">
         <ul class="steps">
           <li class="step step-neutral font-bold">Adding blog details</li>
-          <li :class="['step', currentComponent === 'NewBlogVideo' || 'VideoEditor' ? 'step-neutral font-bold' : '']">Adding blog video  </li>
+          <li :class="['step', currentComponent === ('NewBlogVideo' || 'VideoEditor') ? 'step-neutral font-bold' : '']">Adding blog video  </li>
           <li :class="['step ', currentComponent === 'VideoEditor' ? 'step-neutral font-bold' : '']">Adding video timing  </li>
         </ul>
       </div>

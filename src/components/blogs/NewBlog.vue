@@ -107,6 +107,7 @@ const addNewBlog = async () => {
         <input
           type="file"
           class="file-input file-input-bordered w-full"
+          accept="image/png, image/jpeg"
           @change="handleImage"
         />
       </div>
