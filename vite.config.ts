@@ -1,16 +1,24 @@
-import { fileURLToPath, URL } from 'node:url'
+import { fileURLToPath, URL } from "node:url";
 
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import Pages from 'vite-plugin-pages'
-import Layouts from 'vite-plugin-vue-layouts';
+import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
+import Pages from "vite-plugin-pages";
+import Layouts from "vite-plugin-vue-layouts";
+import eslint from "vite-plugin-eslint";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [vue(), Pages(), Layouts()],
+  plugins: [
+    vue(),
+    Pages(),
+    Layouts(),
+    eslint({
+      fix: true,
+    }),
+  ],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
-    }
-  }
-})
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
+    },
+  },
+});

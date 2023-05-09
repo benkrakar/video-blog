@@ -1,17 +1,17 @@
-import { createApp } from 'vue'
-import App from '@/App.vue'
-import router from '@/router'
-import '@/assets/styles/index.css'
-import { Icon } from '@iconify/vue';
-import { store } from '@/store'
-import VueSweetalert2 from 'vue-sweetalert2';
-import 'sweetalert2/dist/sweetalert2.min.css';
+import { createApp } from "vue";
+import App from "@/App.vue";
+import router from "@/router";
+import "@/assets/styles/index.css";
+import { Icon } from "@iconify/vue";
+import { store } from "@/store";
+import VueSweetalert2 from "vue-sweetalert2";
+import "sweetalert2/dist/sweetalert2.min.css";
 
-const app = createApp(App)
+const app = createApp(App);
 
-app.use(router)
-app.use(store)
+app.use(router);
+app.use(store);
 app.use(VueSweetalert2);
-app.component('Icon', Icon);
+app.component("Icon", Icon);
 
-app.mount('#app')
+app.mount("#app");

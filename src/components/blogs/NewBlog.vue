@@ -1,79 +1,91 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { addDoc, collection, limit, orderBy, query, getDocs, where } from 'firebase/firestore'
+import { ref, onMounted } from "vue";
+import {
+  addDoc,
+  collection,
+  limit,
+  orderBy,
+  query,
+  getDocs,
+  where,
+} from "firebase/firestore";
 import {
   getStorage,
   ref as storageRef,
   uploadBytes,
   getDownloadURL,
-} from 'firebase/storage'
-import { db, auth } from '@/firebase'
-import Swal from 'sweetalert2'
-import Cookies from 'js-cookie'
+} from "firebase/storage";
+import { db, auth } from "@/firebase";
+import Swal from "sweetalert2";
+import Cookies from "js-cookie";
 
-const emit = defineEmits(['blogUpdated', 'updateExistingBlog'])
-const coverImage = ref({} as File)
-const imgUrl = ref('')
+const emit = defineEmits(["blog-updated", "update-existing-blog"]);
+const coverImage = ref({} as File);
+const imgUrl = ref("");
 
 const newBlog = ref({
-  title: '',
-  description: '',
-  author: '',
+  title: "",
+  description: "",
+  author: "",
   created_at: new Date(),
-  coverImage: '',
-})
-const loading = ref(false)
+  coverImage: "",
+});
+const loading = ref(false);
 
 onMounted(async () => {
-  const loggedInUser = Cookies.get('loggedInUser')
-  const user = JSON.parse(loggedInUser as string)  
+  const loggedInUser = Cookies.get("loggedInUser");
+  const user = JSON.parse(loggedInUser as string);
   const lastVideosQuery = query(
-    collection(db, 'blogs'),
-    orderBy('created_at', 'desc'),
-    where('author', '==', user.displayName),
+    collection(db, "blogs"),
+    orderBy("created_at", "desc"),
+    where("author", "==", user.displayName),
     limit(1)
-  )  
-  const lastVideosSnapshot = await getDocs(lastVideosQuery)
-  const lastVideo = lastVideosSnapshot.docs[0]
+  );
+  const lastVideosSnapshot = await getDocs(lastVideosQuery);
+  const lastVideo = lastVideosSnapshot.docs[0];
   if (lastVideo) {
-    const lastVideoData = lastVideo.data()
-    const indexOfLastVideo = lastVideoData.videos?.length - 1
-    if (indexOfLastVideo >= 0 && (!lastVideoData.videos[indexOfLastVideo].startTime || !lastVideoData.videos[indexOfLastVideo].endTime)) {
-      const videoUrl =   lastVideoData.videos[indexOfLastVideo].url
+    const lastVideoData = lastVideo.data();
+    const indexOfLastVideo = lastVideoData.videos?.length - 1;
+    if (
+      indexOfLastVideo >= 0 &&
+      (!lastVideoData.videos[indexOfLastVideo].startTime ||
+        !lastVideoData.videos[indexOfLastVideo].endTime)
+    ) {
+      const videoUrl = lastVideoData.videos[indexOfLastVideo].url;
       Swal.fire({
-          icon: 'warning',
-          title: 'Unfinished blog',
-          text: 'Please finish your last blog then you create new one',
-        })
-      emit('updateExistingBlog', lastVideo.id, videoUrl)
+        icon: "warning",
+        title: "Unfinished blog",
+        text: "Please finish your last blog then you create new one",
+      });
+      emit("update-existing-blog", lastVideo.id, videoUrl);
     }
   }
-})
+});
 
 const handleImage = (e: Event) => {
-  const target = e.target as HTMLInputElement
-  const file = target.files?.[0]
+  const target = e.target as HTMLInputElement;
+  const file = target.files?.[0];
   if (file) {
-    coverImage.value = file
-    imgUrl.value = URL.createObjectURL(coverImage.value)
+    coverImage.value = file;
+    imgUrl.value = URL.createObjectURL(coverImage.value);
   }
-}
+};
 
 const addNewBlog = async () => {
-  loading.value = true
-  const storage = getStorage()
-  if ( coverImage.value.name) {
-    const imageRef = storageRef(storage, 'images/' + coverImage.value.name)
-    await uploadBytes(imageRef, coverImage.value)  
-    const blogCoverImage = await getDownloadURL(imageRef)
-    newBlog.value.coverImage = blogCoverImage
+  loading.value = true;
+  const storage = getStorage();
+  if (coverImage.value.name) {
+    const imageRef = storageRef(storage, "images/" + coverImage.value.name);
+    await uploadBytes(imageRef, coverImage.value);
+    const blogCoverImage = await getDownloadURL(imageRef);
+    newBlog.value.coverImage = blogCoverImage;
   }
   const blogRef = collection(db, "blogs");
-  newBlog.value.author= auth.currentUser?.displayName as string
-  const data = await addDoc(blogRef, newBlog.value)
-  emit('blogUpdated', data.id)
-  loading.value = false
-}
+  newBlog.value.author = auth.currentUser?.displayName as string;
+  const data = await addDoc(blogRef, newBlog.value);
+  emit("blog-updated", data.id);
+  loading.value = false;
+};
 </script>
 
 <template>
@@ -84,10 +96,10 @@ const addNewBlog = async () => {
           <span class="label-text">Title</span>
         </label>
         <input
+          v-model="newBlog.title"
           type="text"
           placeholder="title"
           class="input input-bordered"
-          v-model="newBlog.title"
         />
       </div>
       <div class="form-control">
@@ -95,9 +107,9 @@ const addNewBlog = async () => {
           <span class="label-text">Description</span>
         </label>
         <textarea
+          v-model="newBlog.description"
           placeholder="Description"
           class="textarea textarea-bordered textarea-lg w-full"
-          v-model="newBlog.description"
         ></textarea>
       </div>
       <div class="form-control w-full my-3">
