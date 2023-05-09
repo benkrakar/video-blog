@@ -1,21 +1,30 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import type{ Ref } from 'vue'
-import { collection, getDocs } from "firebase/firestore";
-import BlogCard from '@/components/blogs/blogCard.vue'
+import { ref, onMounted } from "vue";
+import type { Ref } from "vue";
+import { collection, getDocs, where, query } from "firebase/firestore";
+import BlogCard from "@/components/blogs/blogCard.vue";
 import { db } from "@/firebase";
-const blogs: Ref<Blog[]> = ref([])
+import Cookies from "js-cookie";
 
+const blogs: Ref<Blog[]> = ref([]);
+const loggedInUser = Cookies.get("loggedInUser");
+const user = JSON.parse(loggedInUser as string);
 const getAllBlogs = async () => {
-  const blogCollection = collection(db, "blogs");
+  const blogCollection = query(
+    collection(db, "blogs"),
+    where("author", "==", user.displayName)
+  );
   const blogsSnapshot = await getDocs(blogCollection);
-  const blogs = blogsSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  const blogs = blogsSnapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
   return blogs;
 };
 
 onMounted(async () => {
-  blogs.value = await getAllBlogs() as Blog[]
-})
+  blogs.value = (await getAllBlogs()) as Blog[];
+});
 </script>
 
 <template>
@@ -32,7 +41,9 @@ onMounted(async () => {
             If you're looking for random paragraphs, you've come to the right
             place. When a random word or a random sentence isn't quite enough
           </p>
-          <router-link to="/blog/new" class="btn btn-primary my-4">Add new blog</router-link>
+          <router-link to="/blog/new" class="btn btn-primary my-4"
+            >Add new blog</router-link
+          >
         </div>
         <div class="lg:flex items-stretch md:mt-12 mt-8">
           <div class="sm:flex items-center justify-center gap-6 flex-wrap">

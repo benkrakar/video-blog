@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import Navbar from '@/components/Navbar.vue'
+import Navbar from "@/components/Navbar.vue";
 </script>
 <template>
-  <div class="bg-gray-100 min-h-screen ">
+  <div class="bg-gray-100 min-h-screen">
     <Navbar />
     <RouterView />
   </div>
