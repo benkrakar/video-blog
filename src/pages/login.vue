@@ -13,8 +13,6 @@ const passwordToggle = () => {
   passwordType.value = passwordType.value === 'password' ? 'text' : 'password'
 }
 
-const { handleChange: mailError, value: email } = useField('email')
-const { handleChange: passwordError, value: password } = useField('password')
 
 const scheme = computed(() => {
   return yup.object({
@@ -32,6 +30,9 @@ const scheme = computed(() => {
 const { errors, handleSubmit } = useForm({
   validationSchema: scheme,
 })
+const { handleChange: mailError, value: email } = useField('email')
+const { handleChange: passwordError, value: password } = useField('password')
+
 
 const login = handleSubmit(async () => {
   await store.dispatch('signIn', { email: email.value, password: password.value })

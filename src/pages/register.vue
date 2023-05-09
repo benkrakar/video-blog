@@ -2,14 +2,55 @@
 import { ref } from 'vue'
 import NewProfile from '@/components/register/NewProfile.vue'
 import ProfileInfo from '@/components/register/ProfileInfo.vue'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
+import Swal from 'sweetalert2'
 
-const currentComponent = ref('ProfileInfo')
+const router = useRouter()
+const store = useStore()
+const user = ref<Partial<User>>({})
+  const loading = ref(false)
+const currentComponent = ref('NewProfile')
 const components: any = {
   NewProfile,
   ProfileInfo,
 }
-const addUserInfo = async () => {
-  currentComponent.value = 'ProfileInfo'
+
+const addUserInfo = async ({email, password}: User ) => {
+  if (email && password) {
+    user.value = { email, password}
+    currentComponent.value = 'ProfileInfo'
+  }
+}
+
+const submitUser = async (userInfo: User) => {
+      loading.value = true
+      user.value = {...user.value, ...userInfo}      
+      console.log(user.value);
+      
+      await store.dispatch('signUp', user.value).then(() => {
+        loading.value = false
+        Swal.fire({
+          title: 'Congratulations',
+          text: "A confirmation email has been sent to you in order to activate your account.",
+          icon: 'success',
+          confirmButtonColor: '#3085d6',
+          confirmButtonText: 'Great',
+        }).then(() => {
+          router.push('/login')
+        })
+        
+      })
+      .catch((err) => {
+        loading.value = false
+      Swal.fire({
+        position: 'top-end',
+        icon: 'error',
+        title: err,
+        showConfirmButton: false,
+        timer: 1500,
+      })
+    })
 }
 </script>
 
@@ -21,10 +62,14 @@ const addUserInfo = async () => {
           <div class="text-primary font-bold text-4xl mr-2">Video</div>
           <div class="text-secondary font-bold text-4xl">Blog</div>
         </div>
-        <component
+        <KeepAlive>
+          <component
           :is="components[currentComponent]"
           @addUserInfo="addUserInfo"
-        ></component>
+          @submitUser="submitUser"
+          ></component>
+        </KeepAlive>
+        <button class="btn" v-if="currentComponent === 'ProfileInfo' && !loading" @click="currentComponent ='NewProfile' ">back</button>
       </div>
     </div>
   </div>
