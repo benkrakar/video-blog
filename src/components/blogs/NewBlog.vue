@@ -17,7 +17,9 @@ import {
 } from "firebase/storage";
 import { db, auth } from "@/firebase";
 import Swal from "sweetalert2";
-import Cookies from "js-cookie";
+import { useStore } from "vuex";
+
+const store = useStore();
 
 const emit = defineEmits(["blog-updated", "update-existing-blog"]);
 const coverImage = ref({} as File);
@@ -33,8 +35,7 @@ const newBlog = ref({
 const loading = ref(false);
 
 onMounted(async () => {
-  const loggedInUser = Cookies.get("loggedInUser");
-  const user = JSON.parse(loggedInUser as string);
+  const user = store.state.auth.user;
   const lastVideosQuery = query(
     collection(db, "blogs"),
     orderBy("created_at", "desc"),
