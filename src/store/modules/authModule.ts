@@ -38,7 +38,9 @@ interface Actions {
 }
 
 const state: State = {
-  user: (Cookies.get("loggedInUser") as unknown as firebase.User) || null,
+  user: Cookies.get("loggedInUser")
+    ? JSON.parse(Cookies.get("loggedInUser") || "")
+    : null,
 };
 
 const mutations = {

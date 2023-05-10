@@ -4,11 +4,11 @@ import type { Ref } from "vue";
 import { collection, getDocs, where, query } from "firebase/firestore";
 import BlogCard from "@/components/blogs/blogCard.vue";
 import { db } from "@/firebase";
-import Cookies from "js-cookie";
+import { useStore } from "vuex";
 
+const store = useStore();
 const blogs: Ref<Blog[]> = ref([]);
-const loggedInUser = Cookies.get("loggedInUser");
-const user = JSON.parse(loggedInUser as string);
+const user = store.state.auth.user;
 const getAllBlogs = async () => {
   const blogCollection = query(
     collection(db, "blogs"),
