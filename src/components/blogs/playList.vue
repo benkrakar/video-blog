@@ -15,10 +15,9 @@ const setVideo = (item: number) => {
 <template>
   <div class="border border-primary/50 rounded-lg h-fit">
     <div
-      class="bg-primary/80 text-white px-6 py-10 flex justify-between items-center"
+      class="bg-primary/80 text-white px-6 py-3 flex justify-between items-center"
     >
       <h1>Playlist Blog</h1>
-      <Icon icon="material-symbols:close" class="text-2xl cursor-pointer" />
     </div>
     <div class="overflow-scroll max-h-[25rem] py-10">
       <div
