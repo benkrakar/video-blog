@@ -80,6 +80,13 @@ const addNewBlog = async () => {
     await uploadBytes(imageRef, coverImage.value);
     const blogCoverImage = await getDownloadURL(imageRef);
     newBlog.value.coverImage = blogCoverImage;
+  } else {
+    loading.value = false;
+    Swal.fire({
+      icon: "warning",
+      text: "Kindly include a cover image for your blog.",
+    });
+    return;
   }
   const blogRef = collection(db, "blogs");
   newBlog.value.author = auth.currentUser?.displayName as string;
