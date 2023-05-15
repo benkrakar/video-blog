@@ -41,6 +41,7 @@ const handleImage = (e: Event) => {
     newImage.value = file;
     imgUrl.value = URL.createObjectURL(newImage.value);
   } else {
+    target.value = "";
     Swal.fire({
       position: "top-end",
       icon: "error",
