@@ -37,10 +37,23 @@ const user = computed(() => ({
 const handleImage = (e: Event) => {
   const target = e.target as HTMLInputElement;
   const file = target.files?.[0];
-  if (file) {
+  if (file && validateImageFileType(file)) {
     newImage.value = file;
     imgUrl.value = URL.createObjectURL(newImage.value);
+  } else {
+    Swal.fire({
+      position: "top-end",
+      icon: "error",
+      title: "Please choose a correct image type",
+      showConfirmButton: false,
+      timer: 1500,
+    });
   }
+};
+
+const validateImageFileType = (file: File): boolean => {
+  const allowedTypes = ["image/png", "image/jpeg"];
+  return allowedTypes.includes(file.type);
 };
 
 const updateProfile = handleSubmit(async () => {
